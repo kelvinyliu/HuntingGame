@@ -15,14 +15,12 @@ public class Main {
         }
     }
 
-
     public static Cave CreateRandomCave(CaveParameters params)
     {
         // Creation parameters
         final int minimumCaveLength = params.MinimumCaveLength;
         final int caveLength = (int) Math.round(Math.random()*5) + minimumCaveLength;
         int branchRandomNumber;
-
         // Sets the chance of scanning an item in a room
         // Chance to get an item in a room = 1/itemFoundChance
         final int itemFoundChance = 2;
@@ -33,7 +31,6 @@ public class Main {
         for (int i = 0; i < caveLength; i++)
         {
             Cave newCave = new Cave();
-
             // Generate a random number of branching caves per room.
             if (params.IncludeBranches)
             {
@@ -44,36 +41,24 @@ public class Main {
                     branchParameters.MinimumCaveLength = 1;
                     branchParameters.IncludeBranches = false;
                     branchParameters.IncludeMonster = false;
-                    newCave.branches[j] = CreateRandomCave(branchParameters);
+                    newCave.branches.append( CreateRandomCave(branchParameters) );
                 }
             }
-
             // Generate an item in the room
             itemRandomNumber = (int) Math.round(Math.random()*itemFoundChance);
             if (itemRandomNumber == itemFoundChance)
             {
-                itemSeed = (int) Math.round(Math.random()*Entity.values().length);
+                itemSeed = (int) Math.floor(Math.random()*Entity.values().length);
                 newCave.containingEntity = Entity.values()[itemSeed];
             }
-
             appendToCaveEnd(initialCave, newCave);
         }
-
         return initialCave;
-
-
     }
 
-    public static void interactionMenu(Scanner inputScanner)
+    public static void printMenu(Scanner inputScanner)
     {
-
-    }
-
-    public static boolean scanCave(Cave cave)
-    {
-        if (cave.nextCave != null)
-            return true;
-        return false;
+        System.out.println("Menu:");
     }
 
     public static void main(String[] args) {
@@ -82,12 +67,13 @@ public class Main {
 
         CaveParameters params = new CaveParameters();
         Cave cave = CreateRandomCave(params);
+
+        System.out.println("You have entered a cave to try find a legendary monster hiding somewhere.");
+
         while (!foundMonster)
         {
             System.out.println("Scanning cave.");
 
-            if (cave.nextCave == null)
-                foundMonster = true;
         }
 
     }

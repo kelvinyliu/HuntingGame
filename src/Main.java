@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.lang.Thread;
 
 
 public class Main {
@@ -41,6 +42,7 @@ public class Main {
                     branchParameters.MinimumCaveLength = 1;
                     branchParameters.IncludeBranches = false;
                     branchParameters.IncludeMonster = false;
+                    branchParameters.IsBranch = true;
                     newCave.branches.append( CreateRandomCave(branchParameters) );
                 }
             }
@@ -51,14 +53,37 @@ public class Main {
                 itemSeed = (int) Math.floor(Math.random()*Entity.values().length);
                 newCave.containingEntity = Entity.values()[itemSeed];
             }
+            // Sets the branch flag to true if correlated.
+            if (params.IsBranch)
+                newCave.isBranch = true;
             appendToCaveEnd(initialCave, newCave);
         }
         return initialCave;
     }
 
-    public static void printMenu(Scanner inputScanner)
+    public static Cave exploreCave(Scanner inputScanner, Cave cave)
     {
-        System.out.println("Menu:");
+        System.out.println("Scanning current cave.");
+        if (cave.containingEntity != null)
+        {
+            System.out.println("Found item in cave: "+ cave.containingEntity);
+        }
+
+        int branchQuantity = cave.branches.getSize();
+        if (branchQuantity == 0)
+        {
+            System.out.println(".");
+        }
+        System.out.println("There are "+branchQuantity+1+" sub caves, which one should I take?");
+
+        if (cave.nextCave == null)
+        {
+            // Check if branch
+            if (cave.isBranch)
+            {
+
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -68,11 +93,16 @@ public class Main {
         CaveParameters params = new CaveParameters();
         Cave cave = CreateRandomCave(params);
 
-        System.out.println("You have entered a cave to try find a legendary monster hiding somewhere.");
+        System.out.println("You have entered a cave to try find a monster hiding somewhere.");
 
         while (!foundMonster)
         {
-            System.out.println("Scanning cave.");
+            if (cave.nextCave == null)
+                foundMonster = true;
+
+            cave = exploreCave(inputScanner, cave);
+
+
 
         }
 

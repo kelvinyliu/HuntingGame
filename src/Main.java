@@ -1,3 +1,5 @@
+import KelvinList.KelvinList;
+
 import java.util.Scanner;
 import java.lang.Thread;
 
@@ -61,29 +63,36 @@ public class Main {
         return initialCave;
     }
 
-    public static Cave exploreCave(Scanner inputScanner, Cave cave)
+    public static Entity exploreCave(Scanner inputScanner, Cave cave)
     {
+        // BEGIN
         System.out.println("Scanning current cave.");
         if (cave.containingEntity != null)
         {
             System.out.println("Found item in cave: "+ cave.containingEntity);
-        }
-
-        int branchQuantity = cave.branches.getSize();
-        if (branchQuantity == 0)
+        } else
         {
-            System.out.println(".");
+            System.out.println("No item in cave");
         }
-        System.out.println("There are "+branchQuantity+1+" sub caves, which one should I take?");
+        return cave.containingEntity;
+    }
 
-        if (cave.nextCave == null)
+    public static KelvinList<Cave> scanBranches(Cave cave)
+    {
+        if (cave.branches != null)
         {
-            // Check if branch
-            if (cave.isBranch)
-            {
-
-            }
+            System.out.println("There seems to be multiple paths...");
         }
+        return cave.branches;
+    }
+
+    public static int printMenu(Scanner inputScanner, boolean containsBranches)
+    {
+        System.out.println("MENU:");
+        System.out.println("1. Continue forward");
+        System.out.println("2. Use item");
+        System.out.print("Enter your choice: ");
+        return Integer.parseInt(inputScanner.nextLine());
     }
 
     public static void main(String[] args) {
@@ -92,6 +101,7 @@ public class Main {
 
         CaveParameters params = new CaveParameters();
         Cave cave = CreateRandomCave(params);
+        KelvinList<Entity> items = new KelvinList<Entity>();
 
         System.out.println("You have entered a cave to try find a monster hiding somewhere.");
 
@@ -100,11 +110,28 @@ public class Main {
             if (cave.nextCave == null)
                 foundMonster = true;
 
-            cave = exploreCave(inputScanner, cave);
+            // Scan for item in current cave.
+            Entity item = exploreCave(inputScanner, cave);
+            if (item != null)
+                items.append(item);
 
+            KelvinList<Cave> branches = scanBranches(cave);
+            int branchAmount = branches.getSize();
 
+            if (branchAmount > 0)
+            {
+                System.out.println("Which path should I take? (1..."+(branchAmount+1)+")");
+            }
+            int choice = printMenu(inputScanner, false);
+            System.out.println();
+            if (choice == 1)
+            {
+                cave = cave.nextCave;
+            }
+            else if (choice == 2) {
 
+            }
         }
-
+        System.out.println("Found the monster!");
     }
 }

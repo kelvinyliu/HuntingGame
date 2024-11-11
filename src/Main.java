@@ -136,6 +136,7 @@ public class Main {
         CaveParameters params = new CaveParameters();
         Cave cave = CreateRandomCave(params);
         KelvinList<Entity> items = new KelvinList<Entity>();
+        int roomsTraversed = 0;
 
         System.out.println("You have entered a cave to try find a monster hiding somewhere.");
 
@@ -144,18 +145,39 @@ public class Main {
                 foundMonster = true;
 
             // Scan for item in current cave.
+            System.out.println("Traversed " + roomsTraversed + " rooms.");
             Entity item = exploreCave(inputScanner, cave);
             if (item != null) {
                 items.append(item);
-
+                cave.containingEntity = null;
+            }
             KelvinList<Cave> branches = scanBranches(cave);
             int branchAmount = branches.getSize();
+            int choice = printMenu(inputScanner);
 
-            if (branchAmount > 0)
-            {
-                System.out.println("Which path should I take? (1..."+(branchAmount+1)+")");
-            }
-            int choice = printMenu(inputScanner, false);
+            if (choice == 1) {
+                if (branchAmount != 0) {
+                    cave.mainCaveNumber = generateRandomNumber(branchAmount);
+                    // DEBUG
+                    System.out.println("DEBUG: MAIN CAVE: " + cave.mainCaveNumber);
+                    // END DEBUG
+                    int path = validatedNumberInput(inputScanner, "Which path should I take? (0..." + (branchAmount) + ")", branchAmount);
+
+                    // Checks if the player has entered the main cave path towards the monster, or a branch.
+                    if (path == cave.mainCaveNumber) {
+                        roomsTraversed++;
+                        cave = cave.nextCave;
+                    } else {
+                        int randomiseBranch = generateRandomNumber(branchAmount - 1);
+                        Cave selectedBranch = (Cave) cave.branches.retrieve(randomiseBranch).data;
+                        HandleBranchTraversal(selectedBranch, items);
+                        branches.remove(randomiseBranch);
+                    }
+                } else {
+                    roomsTraversed++;
+                    cave = cave.nextCave;
+                }
+            } else HandleInventory(items, inputScanner, cave);
             System.out.println();
             if (choice == 1)
             {
@@ -167,4 +189,27 @@ public class Main {
         }
         System.out.println("Found the monster!");
     }
+
+    public static void HandleBranchTraversal(Cave selectedBranch, KelvinList<Entity> items) {
+        System.out.println("You seem to have entered a sub-section of the cave...");
+        Scanner inputScanner = new Scanner(System.in);
+        while (selectedBranch.nextCave != null) {
+            Entity item = exploreCave(inputScanner, selectedBranch);
+            if (item != null) {
+                items.append(item);
+                selectedBranch.containingEntity = null;
+            }
+
+            int choice = printMenu(inputScanner);
+            if (choice == 1) {
+                selectedBranch = selectedBranch.nextCave;
+            } else {
+                HandleInventory(items, inputScanner, selectedBranch);
+            }
+
+        }
+        System.out.println();
+        System.out.println("There seems to be a dead end...\nReturning back to parent cave.");
+    }
+
 }

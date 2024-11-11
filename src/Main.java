@@ -1,8 +1,6 @@
 import KelvinList.KelvinList;
 
 import java.util.Scanner;
-import java.lang.Thread;
-
 
 public class Main {
 
@@ -179,13 +177,6 @@ public class Main {
                 }
             } else HandleInventory(items, inputScanner, cave);
             System.out.println();
-            if (choice == 1)
-            {
-                cave = cave.nextCave;
-            }
-            else if (choice == 2) {
-
-            }
         }
         System.out.println("Found the monster!");
     }
@@ -212,4 +203,25 @@ public class Main {
         System.out.println("There seems to be a dead end...\nReturning back to parent cave.");
     }
 
+    public static void HandleInventory(KelvinList<Entity> items, Scanner inputScanner, Cave currentCave) {
+        // Check if inventory is empty
+        if (items.getSize() == 0) {
+            System.out.println("There are no items in your inventory.");
+            System.out.println(); // Create new line
+            return;
+        }
+        printInventory(items);
+        int item_input = validatedNumberInput(inputScanner, "Which item would you like to use? ", items.getSize() - 1);
+        Entity selectedItem = (Entity) items.retrieve(item_input).data;
+
+        if (selectedItem == Entity.BRANCH_SCANNER) {
+            // Check if in branch
+            if (currentCave.isBranch) {
+                System.out.println("You are already in a branch, this item would be useless...");
+                return;
+            }
+
+            System.out.println(currentCave.mainCaveNumber);
+        }
+    }
 }

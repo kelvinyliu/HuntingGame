@@ -7,19 +7,20 @@ import java.lang.Thread;
 public class Main {
 
     // Appends another cave to the end of a target cave by using recursion
-    public static void appendToCaveEnd(Cave cave, Cave caveToAppend)
-    {
-        if (cave.nextCave != null)
-        {
+    public static void appendToCaveEnd(Cave cave, Cave caveToAppend) {
+        if (cave.nextCave != null) {
             appendToCaveEnd(cave.nextCave, caveToAppend);
-        } else
-        {
+        } else {
             cave.nextCave = caveToAppend;
         }
     }
 
-    public static Cave CreateRandomCave(CaveParameters params)
-    {
+    // Generates a random number from 0-maximum (inclusive)
+    public static int generateRandomNumber(int maximum) {
+        return (int) (Math.random() * (maximum + 1));
+    }
+
+    public static Cave CreateRandomCave(CaveParameters params) {
         // Creation parameters
         final int minimumCaveLength = params.MinimumCaveLength;
         final int caveLength = (int) Math.round(Math.random()*5) + minimumCaveLength;

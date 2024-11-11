@@ -27,6 +27,39 @@ public class KelvinList<T> implements Iterable<T> {
         return get(index, firstObject);
     }
 
+    public void remove(int index)
+    {
+        if (index < 0 || index >= size)
+            throw new IndexOutOfBoundsException("Cannot retrieve element from index " + index);
+        
+        if (index == 0)
+        {
+            if (firstObject == lastObject)
+            {
+                firstObject = null;
+                lastObject = null;
+            } else // Removing the first element in a list of size > 1
+            {
+                firstObject = firstObject.nextNode;
+            }
+        }  else
+        {
+            Node previousObject = get(index - 1, firstObject);
+            Node currentObject = previousObject.nextNode;
+
+            if (currentObject == lastObject)
+            {
+                lastObject = previousObject;
+                previousObject.nextNode = null;
+            } else
+            {
+                previousObject.nextNode = currentObject.nextNode;
+            }
+        }
+        size--;
+    }
+    
+    
     public int getSize()
     {
         return size;
@@ -49,6 +82,7 @@ public class KelvinList<T> implements Iterable<T> {
         lastObject = newNodeItem;
         size++;
     }
+    
 
     public KelvinList(T... args)
     {

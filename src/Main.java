@@ -23,7 +23,7 @@ public class Main {
     public static Cave CreateRandomCave(CaveParameters params) {
         // Creation parameters
         final int minimumCaveLength = params.MinimumCaveLength;
-        final int caveLength = (int) Math.round(Math.random()*5) + minimumCaveLength;
+        final int caveLength = generateRandomNumber(5) + minimumCaveLength;
         int branchRandomNumber;
         // Sets the chance of scanning an item in a room
         // Chance to get an item in a room = 1/itemFoundChance
@@ -36,11 +36,9 @@ public class Main {
         {
             Cave newCave = new Cave();
             // Generate a random number of branching caves per room.
-            if (params.IncludeBranches)
-            {
-                branchRandomNumber = (int) Math.round(Math.random()*3);
-                for (int j = 0; j < branchRandomNumber; j++)
-                {
+            if (params.IncludeBranches) {
+                branchRandomNumber = generateRandomNumber(3);
+                for (int j = 0; j < branchRandomNumber; j++) {
                     CaveParameters branchParameters = new CaveParameters();
                     branchParameters.MinimumCaveLength = 1;
                     branchParameters.IncludeBranches = false;
@@ -50,10 +48,9 @@ public class Main {
                 }
             }
             // Generate an item in the room
-            itemRandomNumber = (int) Math.round(Math.random()*itemFoundChance);
-            if (itemRandomNumber == itemFoundChance)
-            {
-                itemSeed = (int) Math.floor(Math.random()*Entity.values().length);
+            itemRandomNumber = generateRandomNumber(itemFoundChance);
+            if (itemRandomNumber == itemFoundChance) {
+                itemSeed = generateRandomNumber(Entity.values().length - 1);
                 newCave.containingEntity = Entity.values()[itemSeed];
             }
             // Sets the branch flag to true if correlated.

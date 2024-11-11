@@ -60,31 +60,25 @@ public class Main {
         return initialCave;
     }
 
-    public static Entity exploreCave(Scanner inputScanner, Cave cave)
-    {
+    public static Entity exploreCave(Scanner inputScanner, Cave cave) {
         // BEGIN
         System.out.println("Scanning current cave.");
-        if (cave.containingEntity != null)
-        {
-            System.out.println("Found item in cave: "+ cave.containingEntity);
-        } else
-        {
+        if (cave.containingEntity != null) {
+            System.out.println("Found item in cave: " + cave.containingEntity);
+        } else {
             System.out.println("No item in cave");
         }
         return cave.containingEntity;
     }
 
-    public static KelvinList<Cave> scanBranches(Cave cave)
-    {
-        if (cave.branches != null)
-        {
+    public static KelvinList<Cave> scanBranches(Cave cave) {
+        if (cave.branches.getSize() != 0) {
             System.out.println("There seems to be multiple paths...");
         }
         return cave.branches;
     }
 
-    public static int printMenu(Scanner inputScanner, boolean containsBranches)
-    {
+    public static int printMenu(Scanner inputScanner) {
         System.out.println("MENU:");
         System.out.println("1. Continue forward");
         System.out.println("2. Use item");
@@ -145,14 +139,13 @@ public class Main {
 
         System.out.println("You have entered a cave to try find a monster hiding somewhere.");
 
-        while (!foundMonster)
-        {
+        while (!foundMonster) {
             if (cave.nextCave == null)
                 foundMonster = true;
 
             // Scan for item in current cave.
             Entity item = exploreCave(inputScanner, cave);
-            if (item != null)
+            if (item != null) {
                 items.append(item);
 
             KelvinList<Cave> branches = scanBranches(cave);

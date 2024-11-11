@@ -2,6 +2,6 @@ package KelvinList;
 
 public class Node
 {
-    Node nextNode;
-    Object data;
+    public Node nextNode;
+    public Object data;
 }

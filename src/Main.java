@@ -32,8 +32,7 @@ public class Main {
         int itemSeed;
         Cave initialCave = new Cave();
 
-        for (int i = 0; i < caveLength; i++)
-        {
+        for (int i = 0; i < caveLength; i++) {
             Cave newCave = new Cave();
             // Generate a random number of branching caves per room.
             if (params.IncludeBranches) {
@@ -44,7 +43,7 @@ public class Main {
                     branchParameters.IncludeBranches = false;
                     branchParameters.IncludeMonster = false;
                     branchParameters.IsBranch = true;
-                    newCave.branches.append( CreateRandomCave(branchParameters) );
+                    newCave.branches.append(CreateRandomCave(branchParameters));
                 }
             }
             // Generate an item in the room
@@ -91,6 +90,40 @@ public class Main {
         System.out.println("2. Use item");
         System.out.print("Enter your choice: ");
         return Integer.parseInt(inputScanner.nextLine());
+    }
+
+
+    //Gets a valid number input from the user.
+    public static int validatedNumberInput(Scanner inputScanner, String question, int maximum) {
+        System.out.print(question);
+        boolean validInput = false;
+
+        int parsedNumber = 0;
+        while (!validInput) {
+            boolean isAllDigits = false;
+            String input = inputScanner.nextLine();
+            // check all characters are numbers.
+            for (char character : input.toCharArray()) {
+                if (!Character.isDigit(character)) {
+                    System.out.println("Enter a valid number.");
+                    break;
+                }
+                isAllDigits = true;
+            }
+            if (!isAllDigits)
+                continue;
+            parsedNumber = Integer.parseInt(input);
+
+            if (parsedNumber < 0) {
+                System.out.println("Enter a positive number.");
+                continue;
+            } else if (parsedNumber > maximum) {
+                System.out.println("Enter a number within the range.");
+                continue;
+            }
+            validInput = true;
+        }
+        return parsedNumber;
     }
 
     public static void main(String[] args) {

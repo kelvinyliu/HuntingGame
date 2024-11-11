@@ -92,6 +92,15 @@ public class Main {
         return Integer.parseInt(inputScanner.nextLine());
     }
 
+    public static void printInventory(KelvinList<Entity> inv) {
+        System.out.println("Inventory:");
+        int counter = 0;
+        for (Entity e : inv) {
+            System.out.println(counter + ". " + e);
+            counter++;
+        }
+        return;
+    }
 
     //Gets a valid number input from the user.
     public static int validatedNumberInput(Scanner inputScanner, String question, int maximum) {

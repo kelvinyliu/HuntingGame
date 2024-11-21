@@ -43,6 +43,7 @@ public class Main {
                     branchParameters.IsBranch = true;
                     newCave.branches.append(CreateRandomCave(branchParameters));
                 }
+                newCave.mainCaveNumber = generateRandomNumber(branchRandomNumber);
             }
             // Generate an item in the room
             itemRandomNumber = generateRandomNumber(itemFoundChance);
@@ -80,11 +81,15 @@ public class Main {
         System.out.println("MENU:");
         System.out.println("1. Continue forward");
         System.out.println("2. Use item");
-        System.out.print("Enter your choice: ");
-        return Integer.parseInt(inputScanner.nextLine());
+        System.out.print("");
+        return validatedNumberInput(inputScanner, "Enter your choice: ", 2);
     }
 
     public static void printInventory(KelvinList<Entity> inv) {
+        if (inv.getSize() == 0) {
+            System.out.println("There are no items in your inventory.");
+            return;
+        }
         System.out.println("Inventory:");
         int counter = 0;
         for (Entity e : inv) {
@@ -203,7 +208,7 @@ public class Main {
         System.out.println("There seems to be a dead end...\nReturning back to parent cave.");
     }
 
-    public static void HandleInventory(KelvinList<Entity> items, Scanner inputScanner, Cave currentCave) {
+    public static void HandleInventory(KelvinList<Entity> items, Scanner inputScanner, SaveDataRecord saveData, Cave currentCave) {
         // Check if inventory is empty
         if (items.getSize() == 0) {
             System.out.println("There are no items in your inventory.");
@@ -220,7 +225,15 @@ public class Main {
                 System.out.println("You are already in a branch, this item would be useless...");
                 return;
             }
-
+            int branchAmount = currentCave.branches.getSize();
+            // Checks if there are no branches.
+            if (branchAmount == 0) {
+                System.out.println("There are no branches in this room...");
+                return;
+            }
+            // Checks if main cave > amount of branches
+            if (branchAmount < currentCave.mainCaveNumber)
+                currentCave.mainCaveNumber = generateRandomNumber(branchAmount);
             System.out.println(currentCave.mainCaveNumber);
         }
     }

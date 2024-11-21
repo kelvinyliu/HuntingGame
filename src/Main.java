@@ -60,7 +60,7 @@ public class Main {
         return initialCave;
     }
 
-    public static Entity exploreCave(Scanner inputScanner, Cave cave) {
+    public static Entity exploreCave(Cave cave) {
         // BEGIN
         System.out.println("Scanning current cave.");
         if (cave.containingEntity != null) {
@@ -142,7 +142,7 @@ public class Main {
         KelvinList<Entity> items = new KelvinList<Entity>();
         int roomsTraversed = 0;
 
-        DisplayGameStatistics(inputScanner, false, items, roomsTraversed, saveData);
+        DisplayGameStatistics(false, items, roomsTraversed, saveData);
         PrintSeparator();
         System.out.println("You have entered a cave to try find a monster hiding somewhere.");
 
@@ -152,7 +152,7 @@ public class Main {
 
             // Scan for item in current cave.
             System.out.println("Traversed " + roomsTraversed + " rooms.");
-            Entity item = exploreCave(inputScanner, cave);
+            Entity item = exploreCave(cave);
             if (item != null) {
                 items.append(item);
                 cave.containingEntity = null;
@@ -198,7 +198,7 @@ public class Main {
                 saveData.minimumRooms = roomsTraversed;
         }
         // Show the save data / game instance statistics to the player.
-        DisplayGameStatistics(inputScanner, true, items, roomsTraversed, saveData);
+        DisplayGameStatistics(true, items, roomsTraversed, saveData);
         CreateSaveFile(saveData);
     }
 
@@ -206,7 +206,7 @@ public class Main {
         System.out.println("-".repeat(20));
     }
 
-    public static void DisplayGameStatistics(Scanner inputScanner, boolean endOfGame, KelvinList<Entity> items, int roomsTraversed, SaveDataRecord saveData) {
+    public static void DisplayGameStatistics(boolean endOfGame, KelvinList<Entity> items, int roomsTraversed, SaveDataRecord saveData) {
         PrintSeparator();
         System.out.println("You have " + saveData.totalGold + " gold.");
         System.out.println("You traversed " + saveData.totalRoomsTraversed + " rooms in total.");
@@ -220,7 +220,7 @@ public class Main {
         System.out.println("You seem to have entered a sub-section of the cave...");
         Scanner inputScanner = new Scanner(System.in);
         while (selectedBranch.nextCave != null) {
-            Entity item = exploreCave(inputScanner, selectedBranch);
+            Entity item = exploreCave(selectedBranch);
             if (item != null) {
                 items.append(item);
                 selectedBranch.containingEntity = null;

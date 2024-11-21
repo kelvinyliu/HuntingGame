@@ -1,7 +1,6 @@
 import KelvinList.KelvinList;
 
-public class Cave
-{
+public class Cave {
     Entity containingEntity;
     Cave nextCave;
     boolean isBranch;

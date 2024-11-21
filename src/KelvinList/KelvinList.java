@@ -7,87 +7,71 @@ public class KelvinList<T> implements Iterable<T> {
     private int size;
     private Node lastObject;
 
-    private Node get(int index, Node currentNode)
-    {
+    private Node get(int index, Node currentNode) {
 
-        if (index == 0)
-        {
+        if (index == 0) {
             return currentNode;
-        } else
-        {
-            return get(index -1, currentNode.nextNode);
+        } else {
+            return get(index - 1, currentNode.nextNode);
         }
     }
 
-    public Node retrieve(int index)
-    {
+    public Node retrieve(int index) {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException("Cannot retrieve element from index " + index);
 
         return get(index, firstObject);
     }
 
-    public void remove(int index)
-    {
+    public void remove(int index) {
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException("Cannot retrieve element from index " + index);
-        
-        if (index == 0)
-        {
-            if (firstObject == lastObject)
-            {
+
+        if (index == 0) {
+            if (firstObject == lastObject) {
                 firstObject = null;
                 lastObject = null;
             } else // Removing the first element in a list of size > 1
             {
                 firstObject = firstObject.nextNode;
             }
-        }  else
-        {
+        } else {
             Node previousObject = get(index - 1, firstObject);
             Node currentObject = previousObject.nextNode;
 
-            if (currentObject == lastObject)
-            {
+            if (currentObject == lastObject) {
                 lastObject = previousObject;
                 previousObject.nextNode = null;
-            } else
-            {
+            } else {
                 previousObject.nextNode = currentObject.nextNode;
             }
         }
         size--;
     }
-    
-    
-    public int getSize()
-    {
+
+
+    public int getSize() {
         return size;
     }
 
-    public void append(T data)
-    {
+    public void append(T data) {
         if (data == null)
             throw new NullPointerException("Cannot append a null value");
         Node newNodeItem = new Node();
         newNodeItem.data = data;
 
-        if (firstObject == null)
-        {
+        if (firstObject == null) {
             firstObject = newNodeItem;
-        } else
-        {
+        } else {
             lastObject.nextNode = newNodeItem;
         }
         lastObject = newNodeItem;
         size++;
     }
-    
 
-    public KelvinList(T... args)
-    {
-        for (T item : args)
-        {
+
+    public KelvinList(T... args) {
+        for (T item : args) {
             append(item);
         }
     }
@@ -98,13 +82,11 @@ public class KelvinList<T> implements Iterable<T> {
     }
 }
 
-class KelvinIterator<T> implements Iterator<T>
-{
+class KelvinIterator<T> implements Iterator<T> {
     Node currentObject;
 
-    public KelvinIterator(KelvinList<T> list)
-    {
-        if (list.getSize() >0)
+    public KelvinIterator(KelvinList<T> list) {
+        if (list.getSize() > 0)
             currentObject = list.retrieve(0);
         else
             currentObject = null;

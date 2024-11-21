@@ -1,5 +1,6 @@
 import KelvinList.KelvinList;
 
+import java.io.*;
 import java.util.Scanner;
 
 public class Main {
@@ -96,7 +97,6 @@ public class Main {
             System.out.println(counter + ". " + e);
             counter++;
         }
-        return;
     }
 
     //Gets a valid number input from the user.
@@ -132,8 +132,9 @@ public class Main {
         return parsedNumber;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner inputScanner = new Scanner(System.in);
+        SaveDataRecord saveData = LoadGameData();
         boolean foundMonster = false;
 
         CaveParameters params = new CaveParameters();
@@ -141,6 +142,8 @@ public class Main {
         KelvinList<Entity> items = new KelvinList<Entity>();
         int roomsTraversed = 0;
 
+        DisplayGameStatistics(inputScanner, false, items, roomsTraversed, saveData);
+        PrintSeparator();
         System.out.println("You have entered a cave to try find a monster hiding somewhere.");
 
         while (!foundMonster) {
@@ -160,7 +163,9 @@ public class Main {
 
             if (choice == 1) {
                 if (branchAmount != 0) {
-                    cave.mainCaveNumber = generateRandomNumber(branchAmount);
+                    if (branchAmount < cave.mainCaveNumber)
+                        cave.mainCaveNumber = generateRandomNumber(branchAmount);
+
                     // DEBUG
                     System.out.println("DEBUG: MAIN CAVE: " + cave.mainCaveNumber);
                     // END DEBUG
@@ -173,20 +178,45 @@ public class Main {
                     } else {
                         int randomiseBranch = generateRandomNumber(branchAmount - 1);
                         Cave selectedBranch = (Cave) cave.branches.retrieve(randomiseBranch).data;
-                        HandleBranchTraversal(selectedBranch, items);
+                        HandleBranchTraversal(saveData, selectedBranch, items);
                         branches.remove(randomiseBranch);
                     }
                 } else {
                     roomsTraversed++;
                     cave = cave.nextCave;
                 }
-            } else HandleInventory(items, inputScanner, cave);
-            System.out.println();
+            } else HandleInventory(items, inputScanner, saveData, cave);
+            PrintSeparator();
         }
         System.out.println("Found the monster!");
+        saveData.totalRoomsTraversed += roomsTraversed;
+        // Handles managing the save data.
+        if (saveData.minimumRooms == -1) {
+            saveData.minimumRooms = roomsTraversed;
+        } else {
+            if (roomsTraversed < saveData.minimumRooms)
+                saveData.minimumRooms = roomsTraversed;
+        }
+        // Show the save data / game instance statistics to the player.
+        DisplayGameStatistics(inputScanner, true, items, roomsTraversed, saveData);
+        CreateSaveFile(saveData);
     }
 
-    public static void HandleBranchTraversal(Cave selectedBranch, KelvinList<Entity> items) {
+    public static void PrintSeparator() {
+        System.out.println("-".repeat(20));
+    }
+
+    public static void DisplayGameStatistics(Scanner inputScanner, boolean endOfGame, KelvinList<Entity> items, int roomsTraversed, SaveDataRecord saveData) {
+        PrintSeparator();
+        System.out.println("You have " + saveData.totalGold + " gold.");
+        System.out.println("You traversed " + saveData.totalRoomsTraversed + " rooms in total.");
+        if (endOfGame) {
+            System.out.println("You traversed " + roomsTraversed + " rooms this run.");
+            printInventory(items);
+        }
+    }
+
+    public static void HandleBranchTraversal(SaveDataRecord saveData, Cave selectedBranch, KelvinList<Entity> items) {
         System.out.println("You seem to have entered a sub-section of the cave...");
         Scanner inputScanner = new Scanner(System.in);
         while (selectedBranch.nextCave != null) {
@@ -200,7 +230,7 @@ public class Main {
             if (choice == 1) {
                 selectedBranch = selectedBranch.nextCave;
             } else {
-                HandleInventory(items, inputScanner, selectedBranch);
+                HandleInventory(items, inputScanner, saveData, selectedBranch);
             }
 
         }
@@ -235,6 +265,45 @@ public class Main {
             if (branchAmount < currentCave.mainCaveNumber)
                 currentCave.mainCaveNumber = generateRandomNumber(branchAmount);
             System.out.println(currentCave.mainCaveNumber);
+        } else if (selectedItem == Entity.GOLD) {
+            System.out.println("Added 1 gold to wallet.");
+            saveData.totalGold++;
+        } else {
+            System.out.println("Item error");
+            return;
         }
+        items.remove(item_input);
+    }
+
+    public static boolean SaveFileExists(String name) {
+        File saveFile = new File(name);
+        return saveFile.exists();
+    }
+
+    public static void CreateSaveFile(SaveDataRecord saveDataRecord) throws IOException {
+        final String saveFileName = "save.txt";
+        PrintWriter writer = new PrintWriter(new FileWriter(saveFileName));
+
+        writer.println(saveDataRecord.totalRoomsTraversed);
+        writer.println(saveDataRecord.minimumRooms);
+        writer.println(saveDataRecord.totalGold);
+
+        writer.close();
+    }
+
+    public static SaveDataRecord LoadGameData() throws IOException {
+        final String saveFileName = "save.txt";
+        SaveDataRecord saveData = new SaveDataRecord();
+
+        if (SaveFileExists(saveFileName)) {
+            BufferedReader reader = new BufferedReader(new FileReader(saveFileName));
+
+            saveData.totalRoomsTraversed = Integer.parseInt(reader.readLine());
+            saveData.minimumRooms = Integer.parseInt(reader.readLine());
+            saveData.totalGold = Integer.parseInt(reader.readLine());
+
+            reader.close();
+        }
+        return saveData;
     }
 }
